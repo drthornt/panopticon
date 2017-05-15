@@ -1,0 +1,28 @@
+my $uuid="AAAAAAAA-BBBB-CCCC-DDDD-FFFFFFFFFFFF";
+my $uuid="589cbe36-99ff-403e-84dc-f1f36d9f5b9e";
+
+$uuid=~tr/-//d;
+my $time_low=hex substr($uuid,2* 0,2*4);
+my $time_mid=hex substr($uuid,2* 4,2*2);
+my $version =hex substr($uuid,2* 6,1);
+my $time_hi =hex substr($uuid,2* 6+1,2*2-1);
+
+my $time=($time_hi*(2**16)+$time_mid)*(2**32)+$time_low;
+my $epoc=int($time /10000000) - 12219292800;
+my $nano=$time-int($time/10000000)*10000000;
+
+my $clk_hi  =hex substr($uuid,2* 8,2*1);
+my $clk_lo  =hex substr($uuid,2* 9,2*1);
+my $node    =substr($uuid,2*10,2*6);
+
+$node=~/^(..)(..)(..)(..)(..)(..)$/ || die;
+$node="$1:$2:$3:$4:$5:$6";
+
+print "time: ",scalar localtime $epoc," +",$nano/10000,"ms\n";
+print "clock id: ",$clk_hi*256+$clk_lo,"\n";
+print "Mac: $node\n";
+
+my $byte=hex $1;
+if(hex($1)&1){
+    print "broadcast/multicast bit set.\n";
+};
